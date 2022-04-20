@@ -21,7 +21,7 @@ Therefore, as you transition to larger C++ projects at UCSB, we recommend using 
 
 ## What's in this repo?
 
-This repo contains `buggyLinkedList.cpp`, a stripped-down version of lab01 where the only function I implemented was `addIntToEndOfList`. The program 
+This repo contains `buggyLinkedList.cpp`, a stripped-down version of lab01. The `main()` function 
 - creates an empty linked list on the heap
 - prints out the linked list before adding nodes
 - adds nodes to the end of the linked list
@@ -39,6 +39,8 @@ $ ./a.out
 BEFORE: null
 Segmentation fault (core dumped)
 ```
+
+Oh no, looks like we have a segfault 😧.
 
 ### Step 1: Compile the program with `-g`
 
@@ -75,10 +77,7 @@ Reading symbols from ./a.out...
 (gdb) run
 ```
 
-If your program took command-line arguments, do
-```
-(gdb) run <args>
-```
+*Note: If your program takes command-line arguments, do `run <args>`.*
 
 ### Step 4: Find and fix what caused the segfault
 ```
@@ -93,7 +92,8 @@ Program received signal SIGSEGV, Segmentation fault.
 We can see that line 47 caused a segfault.
 
 **Print a backtrace**
-The backtrace gives us the stack of function calls that led us to where we are.
+
+The backtrace gives us the function call stack that led us to where we are.
 
 ```
 (gdb) backtrace
@@ -104,6 +104,7 @@ The backtrace gives us the stack of function calls that led us to where we are.
 *Note: this means that `main()` called `addIntToEndOfList()`, where we are now.*
 
 **Print an expression**
+
 Let's see what `list->tail` is.
 
 ```
@@ -113,9 +114,9 @@ $1 = (Node *) 0x0
 
 *Note: print can also print structs and arrays!*
 
-Aha! `list->tail` is `null`, so dereferencing it with `->next` causes the crash!
+Aha! `list->tail` is null, so dereferencing it with `->next` causes the segfault!
 
-Let's quit gdb with `quit` and fix the program as follows:
+Let's quit GDB with `quit` and `y` and fix the program as follows:
 
 ```
 void addIntToEndOfList(LinkedList* list, int value) {
@@ -129,7 +130,7 @@ void addIntToEndOfList(LinkedList* list, int value) {
 
 Next, let's recompile the program, restart GDB, and rerun the fixed program. 
 
-*Although we didn't use the commands below in this example, they are useful.*
+*Note: Although we didn't use the commands below in this example, they are useful.*
 
 **Get info about the function's arguments**
 ```
@@ -146,7 +147,7 @@ p = 0x55555556d2e0
 
 ### Step 5: Find and fix the next bug
 ```
-(gdb) r
+(gdb) run
 Starting program: /home/ganesh/Desktop/debuggers/a.out 
 BEFORE: null
 AFTER: null
@@ -157,6 +158,7 @@ AFTER: null
 Although the process now exits normally, notice that this is not the output we expect. We expect `AFTER: [1]->[2]->[3]->null`, not `AFTER: null`. We need to stop the program while it is running and see what's going on.
 
 **Set a breakpoint**
+
 A breakpoint is a program location. If a breakpoint is reached, GDB stops the program. Let's set a breakpoint on line 63, right before we add nodes to the list.
 
 ```
@@ -174,6 +176,7 @@ Breakpoint 1, main (argc=1, argv=0x7fffffffe058) at buggyLinkedList.cpp:63
 *Note: you can also use a function name, like `break addIntToEndOfList`*.
 
 **Step through the code, line by line**
+
 Now that we stopped the program, we can see what's going on line by line. 
 
 ```
@@ -225,7 +228,7 @@ Aha! We never enter the for loop on line 26 because `head` is still null.
 
 I'll leave you to fix the bug, recompile, and restart GDB!
 
-*Although we didn't use the commands below in this example, they are useful.*
+*Note: Although we didn't use the commands below in this example, they are useful.*
 
 **When using step, advance to the end of the function**
 ```
