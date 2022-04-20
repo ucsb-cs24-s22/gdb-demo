@@ -72,6 +72,8 @@ Reading symbols from ./a.out...
 (gdb)
 ```
 
+*Note: if you want to see your program along with the GDB command line, use `gdb -tui`.*
+
 ### Step 3: Run the program using GDB
 ```
 (gdb) run
